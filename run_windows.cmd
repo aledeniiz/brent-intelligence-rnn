@@ -32,6 +32,8 @@ if errorlevel 1 goto fail
 if errorlevel 1 goto fail
 "%PY%" -m scripts.predict
 if errorlevel 1 goto fail
+"%PY%" -m scripts.export_results
+if errorlevel 1 goto fail
 echo [OK] Abriendo Streamlit.
 "%PY%" -m streamlit run app.py
 if errorlevel 1 goto fail
