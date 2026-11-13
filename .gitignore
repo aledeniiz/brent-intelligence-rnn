@@ -218,3 +218,26 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# Brent Intelligence locally generated data, weights, results
+data/*.csv
+data/**/*.csv
+data/*.parquet
+data/**/*.parquet
+artifacts/runs/
+artifacts/smoke/
+artifacts/*.json
+artifacts/*.pt
+reports/*.json
+reports/*.csv
+reports/**/*.json
+reports/**/*.csv
+
+# Generated presentation facts
+reports/*.md
+reports/**/*.md
+
+# PPTX generados en el equipo
+reports/*.pptx
+reports/**/*.pptx

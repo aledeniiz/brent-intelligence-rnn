@@ -45,4 +45,7 @@ def make_features(data: pd.DataFrame) -> pd.DataFrame:
             f["vix_log_level"] = np.log1p(v.where(v >= 0))
         else:
             f[f"{name}_log_change_5"] = np.log(v.where(v > 0)).diff(5)
+    if "orb" in lag:
+        opec = pd.to_numeric(lag["orb"], errors="coerce")
+        f["orb_log_change_5"] = np.log(opec.where(opec > 0)).diff(5)
     return f.replace([np.inf, -np.inf], np.nan)
