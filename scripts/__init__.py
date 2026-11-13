@@ -1,0 +1,1 @@
+"""CLI del caso UAX."""
