@@ -1,0 +1,29 @@
+[project]
+name = "brent-intelligence-rnn"
+version = "0.2.0"
+description = "Prediccion de Brent con RNN, LSTM y GRU; caso academico UAX"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "numpy>=1.26,<3",
+  "pandas>=2.2,<4",
+  "scikit-learn>=1.4,<2",
+  "torch>=2.2,<3",
+  "yfinance>=0.2.50,<3",
+  "streamlit>=1.40,<2",
+  "plotly>=5.20,<7"
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["brent_intelligence*","scripts*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
