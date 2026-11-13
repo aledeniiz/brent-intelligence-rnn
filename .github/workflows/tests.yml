@@ -22,6 +22,11 @@ jobs:
           python -m scripts.train_models --help
           python -m scripts.download_data --help
 
+      - name: Real FRED end-to-end smoke (NOT benchmark evidence)
+        run: |
+          python -m scripts.download_data --fred-only
+          python -m scripts.train_models --smoke --epochs 1 --hidden-size 8 > /dev/null
+          test ! -f artifacts/active.json
   official-data-check:
     runs-on: ubuntu-latest
     timeout-minutes: 8
