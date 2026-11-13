@@ -20,7 +20,8 @@ def test_reporting_respects_completed_full_run(tmp_path):
         "test_period":{"n_anchors":10},
         "uncertainty":{"test_coverage":{"5":0.8,"63":0.7,"252":0.6}},
         "models":{kind:{"test":{str(h):metrics for h in (5,63,252)},
-                         "parameter_count":42,"validation_score":1.0}
+                         "parameter_count":42,"validation_score":1.0,
+                         "folds":[{"seconds":1.0}],"refit":{"seconds":0.5}}
                   for kind in ("rnn","lstm","gru")}
     }
     (run/"summary.json").write_text(json.dumps(report))
