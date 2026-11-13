@@ -73,7 +73,9 @@ for kind,info in summary["models"].items():
                      "MAE ($)":round(m["mae"],2),"RMSE ($)":round(m["rmse"],2),
                      "RMSE ingenuo ($)":round(m["naive_rmse"],2),
                      "Mejora RMSE vs ingenuo (%)":round(100*(1-m["relative_rmse"]),2) if m["relative_rmse"] is not None else None,
-                     "Parametros":info["parameter_count"],"Score validacion":round(info["validation_score"],4)})
+                     "Parametros":info["parameter_count"],
+                     "Entrenamiento (s)":round(sum(f["seconds"] for f in info["folds"])+info["refit"]["seconds"],2),
+                     "Score validacion":round(info["validation_score"],4)})
 st.dataframe(pd.DataFrame(rows),hide_index=True,use_container_width=True)
 st.caption("La arquitectura se elige ANTES del test. Mejoras negativas implican que el predictor ingenuo es superior.")
 with st.expander("Validacion temporal e incertidumbre"):

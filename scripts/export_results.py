@@ -31,6 +31,7 @@ def export(artifacts:Path=ARTIFACTS_DIR,reports:Path=REPORTS_DIR)->dict:
                 "rmse_ingenuo_usd":round(metric["naive_rmse"],5),
                 "mejora_rmse_pct":round(100*(1-ratio),4) if ratio is not None else "",
                 "parametros":detail["parameter_count"],
+                "entrenamiento_segundos":round(sum(fold["seconds"] for fold in detail["folds"])+detail["refit"]["seconds"],3),
                 "score_validacion":round(detail["validation_score"],6),
                 "seleccionado":arch==winner
             })
