@@ -23,3 +23,10 @@ y ejecutar --device cuda. CPU es la opcion mas compatible.
 
 El informe del test final solo puede elaborarse tras descargar datos reales
 y completar el entrenamiento. No se proporcionan cifras de rendimiento ficticias.
+
+
+14. Generar CSV de comparacion, notas y PPTX de cinco diapositivas:
+    .\.venv\Scripts\python.exe -m scripts.export_results
+    .\.venv\Scripts\python.exe -m scripts.build_presentation
+
+Estos archivos se generan en reports/ y no se suben automaticamente a GitHub.

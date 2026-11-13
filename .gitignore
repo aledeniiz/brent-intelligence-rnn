@@ -237,3 +237,7 @@ reports/**/*.csv
 # Generated presentation facts
 reports/*.md
 reports/**/*.md
+
+# PPTX generados en el equipo
+reports/*.pptx
+reports/**/*.pptx

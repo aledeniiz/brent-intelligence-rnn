@@ -11,7 +11,8 @@ dependencies = [
   "torch>=2.2,<3",
   "yfinance>=0.2.50,<3",
   "streamlit>=1.40,<2",
-  "plotly>=5.20,<7"
+  "plotly>=5.20,<7",
+  "python-pptx>=1.0.2,<2"
 ]
 
 [project.optional-dependencies]

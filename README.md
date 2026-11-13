@@ -110,3 +110,19 @@ El profesor pide el CODIGO EN GITHUB y una presentacion de MAXIMO CINCO
 diapositivas (sin contar portada). No inventar valores de precision o
 cobertura. Consulta docs/METODOLOGIA.md, docs/ENTREGA.md y
 docs/PRESENTACION.md. No compartir ni subir PAT, secretos o credenciales.
+
+
+## Presentacion automatica (5 diapositivas)
+
+El lanzador de Windows genera automaticamente una presentacion PowerPoint
+comercial de exactamente cinco diapositivas usando los resultados reales del
+test y las predicciones actuales. Se guarda en:
+
+    reports/Brent_Intelligence_5_slides.pptx
+
+Si solo quieres regenerarla:
+
+    .\.venv\Scripts\python.exe -m scripts.build_presentation
+
+Revisa los textos y resultados antes de entregar; la presentacion refleja
+los errores reales, incluso cuando la red no mejora al predictor ingenuo.

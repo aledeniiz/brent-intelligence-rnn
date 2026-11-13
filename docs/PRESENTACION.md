@@ -8,3 +8,10 @@
 
 No inventar precios, mejoras ni tasas de cobertura. Obtener las cifras del
 JSON artifacts/runs/<id>/summary.json generado con datos reales.
+
+
+## Generacion automatica
+
+Ejecuta python -m scripts.build_presentation una vez finalizado el
+entrenamiento real. Se creara un PowerPoint de exactamente cinco diapositivas
+con los resultados del CSV/modelos. Revisalo antes de defenderlo.
