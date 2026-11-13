@@ -21,3 +21,19 @@ jobs:
         run: |
           python -m scripts.train_models --help
           python -m scripts.download_data --help
+
+  official-data-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install lightweight data audit dependencies
+        run: python -m pip install pandas numpy
+      - name: Fetch Brent and FRED indicators
+        run: python -m scripts.download_data --fred-only
+      - name: Audit official CSV
+        run: python -m scripts.audit_data
