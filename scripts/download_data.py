@@ -71,11 +71,11 @@ def download_dataset(path:Path=DATA_PATH,until:str|None=None,
             raise ValueError("El CSV OPEP debe contener Date y orb")
         frames.append(pd.to_numeric(orb["orb"],errors="coerce"))
         statuses["ORB"]=str(orb_path)
-    df=pd.concat(frames,axis=1).sort_index()
+    df=pd.concat(frames,axis=1,sort=True).sort_index()
     df.index=pd.to_datetime(df.index).normalize()
     df=df.loc[~df.index.duplicated(keep="last")].sort_index()
     df=df.loc[df["brent"].notna()&(df["brent"]>0)]
-    df=df.loc[df.index.dayofweek<5]
+    df=df.loc[df.index.day_of_week<5]
     if len(df)<1000:
         raise ValueError("Historial Brent insuficiente; dataset previo sin modificar")
     df.index.name="Date"
