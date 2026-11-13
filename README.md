@@ -56,6 +56,11 @@ adecuada cuando PyTorch confirma GPU NVIDIA disponible.
 
 Los archivos descargados se guardan en data/, los pesos y transformadores
 en artifacts/runs/ y las auditorias en reports/. NO se suben a GitHub.
+Las tablas verificables se exportan automaticamente a reports/comparison_table.csv y
+reports/presentation_facts.md; si se ejecuta manualmente, usa:
+
+    .\.venv\Scripts\python.exe -m scripts.export_results
+
 La ultima ejecucion completa queda identificada por artifacts/active.json
 y conserva el hash SHA256 del CSV, configuracion, metricas y pesos.
 

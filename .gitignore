@@ -233,3 +233,7 @@ reports/*.json
 reports/*.csv
 reports/**/*.json
 reports/**/*.csv
+
+# Generated presentation facts
+reports/*.md
+reports/**/*.md
