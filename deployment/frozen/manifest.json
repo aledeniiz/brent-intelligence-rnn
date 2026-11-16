@@ -1,0 +1,180 @@
+{
+  "format_version": 1,
+  "created_utc": "2026-11-16T21:16:32.869419+00:00",
+  "architecture": "lstm",
+  "config": {
+    "window": 60,
+    "horizons": [
+      5,
+      63,
+      252
+    ],
+    "hidden_size": 32,
+    "layers": 1
+  },
+  "weights_sha256": "6faa63a401feca6a6cf1942697844e88150bb543b5fca60a988280ba11b63a7f",
+  "training_data_sha256": "5f12b8dff2b134bb2d9745f54a655982a4b53d89ba4e2292d07bb69a8f6879c5",
+  "trained_data_end": "2026-11-11",
+  "last_matured_training_origin": "2025-11-12",
+  "n_training_examples": 6196,
+  "input_features": [
+    "brent_log_level",
+    "brent_ret_1",
+    "brent_ret_5",
+    "brent_ret_21",
+    "brent_vol_21",
+    "brent_vs_ma_21",
+    "wti_spread_relative",
+    "wti_change_scaled",
+    "gas_natural_log_change_5",
+    "tipo_bce",
+    "usd_por_eur_log_change_5",
+    "cny_por_usd_log_change_5",
+    "vix_log_level",
+    "cobre_log_change_5",
+    "oro_log_change_5",
+    "indice_dolar_log_change_5"
+  ],
+  "calibration": {
+    "nominal_coverage": 0.8,
+    "log_error_quantiles": [
+      0.07565671561091164,
+      0.2470818365139773,
+      0.3773127929670665
+    ],
+    "historical_test_coverage": {
+      "5": 0.9156118143459916,
+      "63": 0.9936708860759493,
+      "252": 0.9282700421940928
+    },
+    "n_calibration": 251
+  },
+  "evaluation": {
+    "fold_count": 5,
+    "selection_criterion": "mean fold and horizon RMSE/naive_RMSE; lower is better",
+    "selected_model_historical_test": {
+      "5": {
+        "mae": 2.472085619985746,
+        "mse": 10.644298973183696,
+        "rmse": 3.262560186905936,
+        "naive_mae": 2.4438818565400844,
+        "naive_rmse": 3.207174578405627,
+        "relative_rmse": 1.0172692839589177,
+        "n": 474
+      },
+      "63": {
+        "mae": 7.140626048610859,
+        "mse": 72.22387184043754,
+        "rmse": 8.498462910458429,
+        "naive_mae": 5.364620253164556,
+        "naive_rmse": 6.609453704357282,
+        "relative_rmse": 1.2858041361052,
+        "n": 474
+      },
+      "252": {
+        "mae": 16.196906106442434,
+        "mse": 401.9818006315871,
+        "rmse": 20.049483799629034,
+        "naive_mae": 19.888417721518987,
+        "naive_rmse": 25.863411642982175,
+        "relative_rmse": 0.7752064606321687,
+        "n": 474
+      }
+    },
+    "all_models_historical_test": {
+      "rnn": {
+        "5": {
+          "mae": 2.5520336064721127,
+          "mse": 10.942184900165888,
+          "rmse": 3.3078973533297384,
+          "naive_mae": 2.4438818565400844,
+          "naive_rmse": 3.207174578405627,
+          "relative_rmse": 1.0314054543841462,
+          "n": 474
+        },
+        "63": {
+          "mae": 5.600939408102986,
+          "mse": 47.00388647807292,
+          "rmse": 6.855938045087115,
+          "naive_mae": 5.364620253164556,
+          "naive_rmse": 6.609453704357282,
+          "relative_rmse": 1.0372926949419947,
+          "n": 474
+        },
+        "252": {
+          "mae": 16.834315692565628,
+          "mse": 631.7386036503517,
+          "rmse": 25.13441074802335,
+          "naive_mae": 19.888417721518987,
+          "naive_rmse": 25.863411642982175,
+          "relative_rmse": 0.9718134287532544,
+          "n": 474
+        }
+      },
+      "lstm": {
+        "5": {
+          "mae": 2.472085619985746,
+          "mse": 10.644298973183696,
+          "rmse": 3.262560186905936,
+          "naive_mae": 2.4438818565400844,
+          "naive_rmse": 3.207174578405627,
+          "relative_rmse": 1.0172692839589177,
+          "n": 474
+        },
+        "63": {
+          "mae": 7.140626048610859,
+          "mse": 72.22387184043754,
+          "rmse": 8.498462910458429,
+          "naive_mae": 5.364620253164556,
+          "naive_rmse": 6.609453704357282,
+          "relative_rmse": 1.2858041361052,
+          "n": 474
+        },
+        "252": {
+          "mae": 16.196906106442434,
+          "mse": 401.9818006315871,
+          "rmse": 20.049483799629034,
+          "naive_mae": 19.888417721518987,
+          "naive_rmse": 25.863411642982175,
+          "relative_rmse": 0.7752064606321687,
+          "n": 474
+        }
+      },
+      "gru": {
+        "5": {
+          "mae": 2.464420983431727,
+          "mse": 10.527196799624308,
+          "rmse": 3.244564192557193,
+          "naive_mae": 2.4438818565400844,
+          "naive_rmse": 3.207174578405627,
+          "relative_rmse": 1.0116581162757137,
+          "n": 474
+        },
+        "63": {
+          "mae": 5.646499037803451,
+          "mse": 47.957455374530156,
+          "rmse": 6.925132155744766,
+          "naive_mae": 5.364620253164556,
+          "naive_rmse": 6.609453704357282,
+          "relative_rmse": 1.0477616555781868,
+          "n": 474
+        },
+        "252": {
+          "mae": 17.213370061863618,
+          "mse": 657.3017124252061,
+          "rmse": 25.63789602181127,
+          "naive_mae": 19.888417721518987,
+          "naive_rmse": 25.863411642982175,
+          "relative_rmse": 0.9912805153363401,
+          "n": 474
+        }
+      }
+    }
+  },
+  "caveats": [
+    "Modelo de produccion congelado: NO tiene test independiente propio.",
+    "El backtest historico pertenece a los modelos de evaluacion.",
+    "Variables externas sin certificacion point-in-time.",
+    "Intervalos nominales empiricos, no garantizados."
+  ]
+}
