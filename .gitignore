@@ -241,3 +241,6 @@ reports/**/*.md
 # PPTX generados en el equipo
 reports/*.pptx
 reports/**/*.pptx
+
+# Diagnosticos y resultados regenerables (no versionar)
+reports/diagnostics/
