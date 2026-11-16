@@ -126,3 +126,25 @@ Si solo quieres regenerarla:
 
 Revisa los textos y resultados antes de entregar; la presentacion refleja
 los errores reales, incluso cuando la red no mejora al predictor ingenuo.
+
+
+## Diagnosticos y actualizacion automatica (modelo congelado)
+
+Sin volver a entrenar, puedes recuperar graficos reales de entrenamiento y test:
+
+    .\.venv\Scripts\python.exe -m scripts.plot_diagnostics
+
+Genera HTML de loss train/validation (RNN, LSTM y GRU en cinco folds),
+graficos de precio real frente a predicho y residuos, y predicciones_test.csv.
+El CSV de datos tiene que ser IDENTICO al usado al entrenar (SHA256).
+
+Para habilitar la actualizacion automatica SIN depender del portatil,
+prepara una instantanea del modelo de produccion:
+
+    .\.venv\Scripts\python.exe -m scripts.export_frozen
+
+Crea deployment/frozen/{production.pt,preprocessing.json,manifest.json}.
+Una vez revisados y publicados esos tres archivos, GitHub Actions puede
+actualizar el Brent entre semana y guardar public/latest_forecast.json sin
+reentrenar. El dashboard publico utiliza app_public.py, separado de app.py
+local. Revisa docs/ACTUALIZACION_AUTOMATICA.md antes de publicar los pesos.

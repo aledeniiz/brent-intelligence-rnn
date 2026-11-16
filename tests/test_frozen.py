@@ -25,7 +25,7 @@ def example_data(path):
 
 def bundle(tmp_path):
     folder = tmp_path / "frozen"
-    folder.mkdir()
+    folder.mkdir(exist_ok=True)
     model = RecurrentForecaster("lstm", 2, 8, 1, 3)
     torch.save(model.state_dict(), folder / "production.pt")
     prep = {"columns": ["brent_log_level", "brent_ret_1"],

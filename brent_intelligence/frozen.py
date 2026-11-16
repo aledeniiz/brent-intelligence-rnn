@@ -201,7 +201,8 @@ def forecast_frozen(*, data: Path = DATA_PATH, bundle: Path = FROZEN_DIR,
         if latest_date < previous_date:
             raise ValueError("Fecha de datos mas antigua que el ultimo pronostico publicado")
         if (latest_date == previous_date
-            and older.get("model", {}).get("weights_sha256") == manifest["weights_sha256"]):
+            and older.get("model", {}).get("weights_sha256") == manifest["weights_sha256"]
+            and older.get("data_sha256") == file_hash(data)):
             return {"changed": False, "forecast": older}
     history = raw["brent"].tail(450)
     result = {
