@@ -1,0 +1,57 @@
+name: Daily frozen Brent refresh
+on:
+  schedule:
+    - cron: "25 20 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: frozen-brent-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect published checkpoint
+        id: bundle
+        shell: bash
+        run: |
+          if test -s deployment/frozen/production.pt \
+             && test -s deployment/frozen/preprocessing.json \
+             && test -s deployment/frozen/manifest.json; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "No frozen bundle yet; export locally and commit three files under deployment/frozen/." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.bundle.outputs.ready == 'true'
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        if: steps.bundle.outputs.ready == 'true'
+        run: python -m pip install -e .
+      - name: Download FRED/EIA and optional Yahoo
+        if: steps.bundle.outputs.ready == 'true'
+        run: python -m scripts.download_data
+      - name: Infer with frozen weights (never train)
+        if: steps.bundle.outputs.ready == 'true'
+        run: python -m scripts.update_frozen
+      - name: Publish only latest forecast JSON
+        if: steps.bundle.outputs.ready == 'true'
+        shell: bash
+        run: |
+          git add public/latest_forecast.json
+          if git diff --cached --quiet; then
+            echo "No new Brent observation to publish." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: refresh Brent frozen forecast"
+          git push origin HEAD:main
