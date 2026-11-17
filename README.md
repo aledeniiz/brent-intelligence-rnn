@@ -206,3 +206,28 @@ ya entrenados y hace solamente inferencia, sin fit ni optimizer.
 Existe tambien la renovación diaria con GitHub Actions y los pesos
 congelados de producción. No es necesario reentrenar por cada valor.
 Ver docs/ENTRENAMIENTO_ENTREGA.md.
+
+
+## V5: modelos independientes por horizonte (investigacion de mejora)
+
+Tras la evaluacion de entrega, se dispone de un nuevo **experimento completo**
+que NO sustituye automaticamente al predictor publicado. Cada horizonte
+(5, 63 y 252 sesiones) entrena su **propia** RNN/LSTM/GRU y aprovecha todas
+las etiquetas maduradas de su objetivo; el sistema elige la arquitectura
+por horizonte segun validacion cronologica anterior a 2024.
+
+    .\.venv\Scripts\python.exe -m scripts.train_horizon_models --dry-run
+    .\.venv\Scripts\python.exe -m scripts.train_horizon_models
+
+El CSV debe estar actualizado (si no, ejecutar scripts.download_data).
+Los resultados se guardan bajo reports/horizon_v5/RUN/ y los pesos candidatos
+en artifacts/horizon_candidates/RUN/. Se guardan curvas, metricas, folds,
+predicciones individuales y tambien el rendimiento de los pronosticos SIN
+contraccion: si el mecanismo escoge alpha=0, equivale al ingenuo.
+
+Se pueden reproducir los pronosticos, sin entrenar ni cambiar pesos:
+
+    .\.venv\Scripts\python.exe -m scripts.predict_horizon_models --summary reports/horizon_v5/RUN/summary.json
+
+No usar los errores de 2024+ para seguir modificando o seleccionando modelos:
+ese periodo ya se examino anteriormente. Ver docs/HORIZONTES_V5.md.
