@@ -14,6 +14,7 @@ from dataclasses import replace
 from datetime import datetime,timezone
 from hashlib import sha256
 import json
+import os
 from pathlib import Path
 import statistics
 
@@ -163,6 +164,9 @@ def run(*,data:Path=DATA_PATH,output:Path=REPORTS_DIR/"research_v2",
         raise ValueError("Configuracion de variables invalida")
     if not 1<=folds<=5:
         raise ValueError("Se admiten de uno a cinco folds")
+    if mode in ("lstm", "both"):
+        import torch
+        torch.set_num_threads(min(4, os.cpu_count() or 1))
     raw_source=load_prices(data)
     # Exclusión física de 2022-2026: ni etiquetas ni features del test y
     # calibración se construyen en este laboratorio de investigación.
