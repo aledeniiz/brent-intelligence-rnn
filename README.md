@@ -1,3 +1,37 @@
+# Aviso importante para entrega académica v4
+
+El caso exige que **el modelo evaluado y el modelo mostrado en la
+aplicación sean identificables y coherentes**. El dashboard anterior
+app.py y app_public.py usan la LSTM de un experimento previo.
+La RNN seleccionada en el entrenamiento completo v4 tiene una app
+de demostración separada: **app_delivery.py**. Esta app carga los
+pesos locales de artifacts/delivery_candidates/RUN y presenta las
+métricas 2024+ como evaluación de modelos anteriores al reajuste,
+NO como test del modelo final.
+
+Con los pesos y resultados v4 existentes en el ordenador:
+
+    .\.venv\Scripts\python.exe -m streamlit run app_delivery.py
+
+También se puede abrir start_delivery_app.cmd. La app permite escoger
+5/63/252 sesiones, comparar RNN/LSTM/GRU, ver los episodios de
+2008/2014–16/2020/2022/2026 y añadir filas nuevas al CSV **sin
+reentrenar**. Los intervalos del 80% son solo bandas descriptivas
+basadas en errores históricos de otro ajuste; su cobertura futura
+NO está validada.
+
+La presentación de cinco diapositivas que utiliza la misma ejecución
+v4 se genera con:
+
+    .\.venv\Scripts\python.exe -m scripts.build_delivery_presentation --summary reports/delivery_training/RUN/summary.json
+
+La cesta OPEP está soportada opcionalmente, pero NO consta entre
+las variables efectivamente utilizadas en la ejecución reciente.
+Los tiempos por arquitectura v4 no quedaron registrados; no inventarlos.
+Ver docs/AUDITORIA_ENUNCIADO.md para los puntos pendientes.
+
+---
+
 # Brent Intelligence — Prediccion de Brent con RNN, LSTM y GRU
 
 Caso 2 de Aprendizaje Automatico (UAX). Aplicacion de pronostico del Brent spot
