@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import numpy as np
 from pathlib import Path
 
 import pandas as pd
@@ -69,7 +70,7 @@ def metric_card(slide,x,y,w,label,value,note,highlight=False):
     text(slide,note,x+.2,y+1.17,w-.4,.36,11,False,MUTED)
 
 
-def build_delivery_deck(summary, forecast, price_series, output):
+def build_delivery_deck(summary, forecast, price_series, output, uncertainty=None):
     if summary.get("mode")!="complete-delivery-candidates":
         raise ValueError("Se requiere summary.json de entrenamiento completo v4")
     selected=summary["selected_architecture"]
@@ -141,7 +142,14 @@ def build_delivery_deck(summary, forecast, price_series, output):
         text(slide,f"{h} sesiones",1.02,y+.24,2.25,.46,19,True,CYAN)
         text(slide,f"USD {p:.2f}",3.15,y+.20,3.04,.51,24,True)
         text(slide,f"{100*(p/base-1):+.2f}% vs hoy",
-             7.03,y+.26,4.50,.39,16)
+             7.03,y+.15,4.50,.35,16)
+        if uncertainty and h in uncertainty:
+            lo,hi=uncertainty[h]
+            text(slide,f"Banda 80% orientativa: {lo:.2f}–{hi:.2f} USD",
+                 7.03,y+.59,5.0,.35,12,False,MUTED)
+        else:
+            text(slide,"Sin banda empírica documentada",
+                 7.03,y+.59,5.0,.35,12,False,MUTED)
     text(slide,"La app muestra bandas empíricas orientativas cuando existen residuos; "
          "no existe cobertura futura del 80% demostrada.",
          .82,6.22,11.76,.72,13,False,MUTED)
@@ -174,6 +182,32 @@ def build_delivery_deck(summary, forecast, price_series, output):
     return output
 
 
+def retrospective_bands(csv_path,architecture,forecasts):
+    """Display-only historical percentiles. NOT independently validated coverage."""
+    path=Path(csv_path)
+    if not path.is_file():
+        return {}
+    data=pd.read_csv(path)
+    needed={"architecture","horizon","actual","predicted"}
+    if not needed.issubset(data.columns):
+        return {}
+    result={}
+    for h in (5,63,252):
+        subset=data.loc[
+            (data["architecture"].astype(str).str.lower()==architecture.lower()) &
+            (pd.to_numeric(data["horizon"],errors="coerce")==h)
+        ]
+        a=pd.to_numeric(subset["actual"],errors="coerce").to_numpy(dtype=float)
+        p=pd.to_numeric(subset["predicted"],errors="coerce").to_numpy(dtype=float)
+        ok=np.isfinite(a)&np.isfinite(p)&(a>0)&(p>0)
+        if np.count_nonzero(ok)<30:
+            continue
+        q=float(np.quantile(np.abs(np.log(a[ok]/p[ok])),.80))
+        point=float(forecasts["predictions"][str(h)])
+        result[h]=(float(point*np.exp(-q)),float(point*np.exp(q)))
+    return result
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--summary",type=Path,required=True)
@@ -188,7 +222,11 @@ def main():
         weights_dir=args.weights_dir or ARTIFACTS_DIR/"delivery_candidates"/args.summary.parent.name
     )
     raw=load_prices(args.data)
-    output=build_delivery_deck(summary,forecast,raw["brent"],args.output)
+    bands=retrospective_bands(
+        args.summary.parent/"holdout_predictions.csv",
+        summary["selected_architecture"],forecast)
+    output=build_delivery_deck(summary,forecast,raw["brent"],args.output,
+                               uncertainty=bands)
     print(f"Presentación académica: {output} · 5 diapositivas")
     print("Nota: las métricas históricas no pertenecen al reajuste final")
 

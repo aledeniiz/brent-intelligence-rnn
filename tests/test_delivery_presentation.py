@@ -24,7 +24,8 @@ def test_five_slides_match_v4_architecture_and_forecasts(tmp_path):
         "predictions":{"5":92.14,"63":91.94,"252":78.27}
     }
     path=build_delivery_deck(summary,forecast,pd.Series([72.,80.,60.,92.14]),
-                             tmp_path/"deck.pptx")
+                             tmp_path/"deck.pptx",
+                             uncertainty={5:(85.,99.),63:(72.,110.),252:(52.,120.)})
     prs=Presentation(path)
     assert len(prs.slides)==5
     texts=[" ".join(shape.text for shape in slide.shapes if shape.has_text_frame)
@@ -32,4 +33,4 @@ def test_five_slides_match_v4_architecture_and_forecasts(tmp_path):
     assert "RNN" in texts[2] and "LSTM" in texts[2] and "GRU" in texts[2]
     assert "21.14" in texts[2]
     assert "92.14" in texts[3] and "78.27" in texts[3]
-    assert "80%" in texts[3]
+    assert "80%" in texts[3] and "85.00" in texts[3]
