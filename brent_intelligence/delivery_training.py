@@ -509,14 +509,17 @@ def run_delivery(*, data_path: Path = DATA_PATH,
         inner = train_inner(ex, kind, latest_cutoff, cfg)
         model, scaler, meta = refit(ex, kind, latest_cutoff, cfg, inner["epoch"])
         model.eval()
-        torch.save(model.state_dict(), saved_models / f"{kind}.pt")
+        weights_path = saved_models / f"{kind}.pt"
+        torch.save(model.state_dict(), weights_path)
+        weights_sha256 = sha256(weights_path.read_bytes()).hexdigest()
         latest_x = scaler.x(ex.features)[-cfg.window:][None, :, :]
         raw_logits = _infer(model, latest_x)[0] * np.asarray(scaler.y_std)
         predicted = float(ex.prices[-1]) * np.exp(
             np.clip(raw_logits * np.asarray(inner["alpha"]), -4., 4.))
         final_models[kind] = {
             "architecture": kind, "n_parameters": sum(p.numel() for p in model.parameters()),
-            "weights": f"{kind}.pt", "trained_until": latest_cutoff,
+            "weights": f"{kind}.pt", "weights_sha256": weights_sha256,
+            "trained_until": latest_cutoff,
             "n_input_features": len(scaler.columns),
             "input_columns": scaler.columns, "preprocessing": asdict(scaler),
             "training": meta, "final_inner": inner,
