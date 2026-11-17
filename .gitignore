@@ -247,3 +247,8 @@ reports/diagnostics/
 
 # Investigacion V4 (solo resultados locales; no publicar pesos, CSV o curvas)
 reports/research_v4/
+
+
+# Full training candidates: do not commit weights, labels, reports or charts
+artifacts/delivery_candidates/
+reports/delivery_training/

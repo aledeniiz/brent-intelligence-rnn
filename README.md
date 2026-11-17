@@ -164,3 +164,22 @@ validacion interna y externa, y promedia dos semillas.
 
 Los resultados se guardan en reports/research_v4/ y NO afectan a la LSTM
 publicada, el workflow ni los pronosticos existentes. Ver docs/MEJORA_V4.md.
+
+
+## Entrenamiento definitivo de entrega (modelo completo hasta la ultima fecha)
+
+El comando preferido para el caso completo ahora es:
+
+    .\.venv\Scripts\python.exe -m scripts.download_data
+    .\.venv\Scripts\python.exe -m scripts.train_delivery --dry-run
+    .\.venv\Scripts\python.exe -m scripts.train_delivery
+
+Entrena y guarda **RNN, LSTM y GRU con el dataset completo**, usando por
+cada horizonte solo etiquetas maduras (5 y 63 sesiones aprovechan datos
+recientes que antes se descartaban por no existir todavia las de 252).
+Usa ventana de 60, exogenas disponibles, dropout, AdamW, modelo residual y
+validacion temporal anidada. Selecciona arquitectura con folds anteriores
+a 2024; genera tambien comparacion historica 2024+ que NO es test virgen.
+Los tres candidatos finales se entrenan hasta la ultima cotizacion
+disponible y quedan guardados de forma aislada, sin cambiar dashboard ni
+modelo congelado. Instrucciones y limitaciones en docs/ENTRENAMIENTO_ENTREGA.md.
