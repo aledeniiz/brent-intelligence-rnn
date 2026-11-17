@@ -163,7 +163,12 @@ def run(*,data:Path=DATA_PATH,output:Path=REPORTS_DIR/"research_v2",
         raise ValueError("Configuracion de variables invalida")
     if not 1<=folds<=5:
         raise ValueError("Se admiten de uno a cinco folds")
-    raw=load_prices(data)
+    raw_source=load_prices(data)
+    # Exclusión física de 2022-2026: ni etiquetas ni features del test y
+    # calibración se construyen en este laboratorio de investigación.
+    raw=raw_source.loc[: "2021-12-31"].copy()
+    if len(raw)<window+252:
+        raise ValueError("Historial insuficiente antes del bloqueo 2022")
     all_features=make_features(raw)
     records=[]
     run_key=sha256(Path(data).read_bytes()).hexdigest()
@@ -188,7 +193,8 @@ def run(*,data:Path=DATA_PATH,output:Path=REPORTS_DIR/"research_v2",
                                                 feature_set=feature_set)
                         records.append(result)
     summary={"status":"research-only","created_utc":datetime.now(timezone.utc).isoformat(),
-             "data_sha256":run_key,"data_last_date":str(raw.index[-1].date()),
+             "data_sha256":run_key,"research_data_end":str(raw.index[-1].date()),
+             "source_data_end":str(raw_source.index[-1].date()),
              "used_test":False,"used_calibration":False,
              "dry_run":dry_run,
              "mode":mode,"feature_sets":feature_sets,"horizons":horizons,
