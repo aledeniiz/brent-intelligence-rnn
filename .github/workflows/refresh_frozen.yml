@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   refresh:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -42,13 +43,25 @@ jobs:
       - name: Infer with frozen weights (never train)
         if: steps.bundle.outputs.ready == 'true'
         run: python -m scripts.update_frozen
-      - name: Publish only latest forecast JSON
+      - name: Publish forecast journal and matured evaluation
         if: steps.bundle.outputs.ready == 'true'
         shell: bash
         run: |
-          git add public/latest_forecast.json
+          git add -- public/latest_forecast.json public/prospective/ public/prospective_evaluation.json
+          while IFS=$'\t' read -r status path; do
+            case "$path" in
+              public/latest_forecast.json|public/prospective_evaluation.json) ;;
+              public/prospective/forecasts/*.json|public/prospective/labels/*.json)
+                if test "$status" != A; then
+                  echo "Refusing to replace or delete an archived record: $path" >&2
+                  exit 1
+                fi
+                ;;
+              *) echo "Unexpected staged file: $path" >&2; exit 1 ;;
+            esac
+          done < <(git diff --cached --name-status --no-renames)
           if git diff --cached --quiet; then
-            echo "No new Brent observation to publish." >> "$GITHUB_STEP_SUMMARY"
+            echo "No new forecast or matured label to publish." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           git config user.name "github-actions[bot]"
