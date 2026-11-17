@@ -69,3 +69,61 @@ en horizontes solapados producen errores dependientes; y el dia de
 publicacion de las variables externas no esta certificado point-in-time.
 No ajustar repetidamente tras mirar los resultados para favorecer un
 periodo. ROC-AUC evalua direcciones, NO una probabilidad de clasificacion.
+
+
+## Alineación específica con el mensaje del profesor (17/11/2026)
+
+El objetivo central NO es una API ni un dashboard: es entrenar y
+comprobar que la red generaliza sobre precios verdaderos no empleados
+para ajustarla.
+
+**Protocolo evaluativo reproducible:**
+
+1. Cortar entrenamiento el **29/12/2023**.
+2. Para cada arquitectura RNN/LSTM/GRU, elegir época y coeficientes
+   usando sólo validación interna anterior al corte.
+3. Ajustar la red seleccionada de esa arquitectura exclusivamente con
+   etiquetas maduras **hasta dicho corte**.
+4. Emitir predicciones para orígenes desde **01/01/2024**, sin incluir
+   estos datos en el entrenamiento de los modelos evaluados.
+5. Comparar cada pronóstico con el precio real **posteriormente
+   observado en su fecha objetivo**. Nunca evaluar una etiqueta que
+   todavía no ha madurado (especialmente el horizonte de 252).
+6. Mostrar una tabla por red/horizonte con **R², MAE, MSE y RMSE**,
+   RMSE ingenuo, y gráficos visuales reales frente a predichos.
+7. Tras registrar la evaluación histórica, reajustar **tres modelos de
+   entrega independientes** con el histórico íntegro y etiquetas maduras
+   hasta la última fecha del CSV; estos modelos de hoy **no tienen
+   evaluación independiente propia**. No mezclar resultados.
+
+**Nota de honestidad científica:** los años 2024–2026 ya habían sido
+consultados en investigaciones anteriores. La separación temporal es
+correcta en este nuevo proceso pero no son datos jamás vistos por el
+equipo. No atribuir significación ni presentar este backtest como
+validación prospectiva no contaminada.
+
+Los ficheros entregables son:
+- holdout_metrics.csv (R², MAE, MSE, RMSE y diagnósticos direccionales)
+- holdout_predictions.csv (cada origen, fecha objetivo, precio real,
+  estimado e ingenuo)
+- real_vs_predicted.html (tres horizontes, valor real alineado a la
+  fecha objetivo, RNN/LSTM/GRU e ingenuo)
+- real_vs_predicted_scatter.html (dispersión real contra predicho)
+- learning_curves.html (train loss y validación interna)
+- fold_metrics.csv y summary.json (selección y entrenamiento completo)
+
+**Actualización SIN reentrenar**: el proyecto tiene
+scripts.download_data (API FRED/EIA) y GitHub Actions para actualizar
+datos e inferir con pesos congelados. Para un nuevo modelo final de este
+entrenamiento se puede usar un CSV con las mismas columnas y:
+
+    python -m scripts.predict_delivery --summary reports/delivery_training/RUN/summary.json
+
+O especificar un CSV actualizado manualmente:
+
+    python -m scripts.predict_delivery --summary reports/delivery_training/RUN/summary.json --data ruta/al/csv_actualizado.csv
+
+Eso ejecuta únicamente forward(), sin optimizer, fit, nuevos
+escaladores ni reentrenamiento. Comprobar siempre que la fecha del dato
+sea posterior a la de entrenamiento. La predicción de hoy es **un
+pronóstico**, no una evaluación de su acierto futuro.

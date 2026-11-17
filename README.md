@@ -183,3 +183,26 @@ a 2024; genera tambien comparacion historica 2024+ que NO es test virgen.
 Los tres candidatos finales se entrenan hasta la ultima cotizacion
 disponible y quedan guardados de forma aislada, sin cambiar dashboard ni
 modelo congelado. Instrucciones y limitaciones en docs/ENTRENAMIENTO_ENTREGA.md.
+
+
+## Evaluación estadística y validación indicada por el profesor
+
+El comando preferente de entrega es:
+
+    python -m scripts.train_delivery
+
+La evaluación del **modelo entrenado sólo hasta 29/12/2023** se mide
+sobre precios posteriores (orígenes desde 2024, objetivos madurados),
+para los 3 horizontes y 3 redes, usando **R², MAE, MSE, RMSE** e
+ingenúo. Genera
+reports/delivery_training/RUN/{holdout_metrics.csv,
+holdout_predictions.csv,real_vs_predicted.html,
+real_vs_predicted_scatter.html,learning_curves.html}.
+El año 2024+ no es test virgen tras exploraciones previas.
+
+**Dos operaciones independientes:** scripts.download_data incorpora
+nuevos valores (FRED/EIA); scripts.predict_delivery carga los pesos
+ya entrenados y hace solamente inferencia, sin fit ni optimizer.
+Existe tambien la renovación diaria con GitHub Actions y los pesos
+congelados de producción. No es necesario reentrenar por cada valor.
+Ver docs/ENTRENAMIENTO_ENTREGA.md.
