@@ -34,11 +34,15 @@ def main():
         return
     print("Dataset through:", result["data"]["last_date"])
     print("Selected from old folds:", result["selected_architecture"])
-    print("Previously inspected 2024+ diagnostic (NOT independent):")
-    for h, values in result["historical_test_diagnostic"]["metrics"].items():
-        print(f"  {h} sessions: RMSE={values['rmse']:.4f}, "
-              f"naive={values['naive_rmse']:.4f}, "
-              f"improvement={values['improvement_pct']:+.2f}%")
+    print("Teacher evaluation: train through 2023, compare observed 2024+")
+    print("(2024+ has been inspected before: NOT a pristine test)")
+    for architecture, values in result["historical_test_diagnostic"]["models"].items():
+        print(architecture.upper())
+        for h, m in values["metrics"].items():
+            print(f"  {h} sessions: R2={m['r2']}, MAE={m['mae']:.4f}, "
+                  f"MSE={m['mse']:.4f}, RMSE={m['rmse']:.4f}, "
+                  f"naive={m['naive_rmse']:.4f}, "
+                  f"improvement={m['improvement_pct']:+.2f}%")
     print("All final model candidates:", result["candidate_weights_dir"])
     print("Report and curves:", result["saved_to"])
     print("Production models, apps and active.json: unchanged.")

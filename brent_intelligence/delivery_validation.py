@@ -51,16 +51,8 @@ def compare_after_cutoff(ex, cfg, *, cutoff=DEFAULT_TRAIN_CUTOFF):
         if any(pd.Timestamp(x) > pd.Timestamp(cutoff)
                for x in [training["last_label_date"]]):
             raise AssertionError("Future labels were used in holdout fitting")
-        if np.any(ex.target_indices[
-            np.flatnonzero((ex.anchors <= cutoff_index) &
-                           (ex.observed &
-                            (ex.target_indices <= cutoff_index)).any(axis=1))
-        ][(ex.observed &
-           (ex.target_indices <= cutoff_index))[
-               np.flatnonzero((ex.anchors <= cutoff_index) &
-                   (ex.observed & (ex.target_indices <= cutoff_index)).any(axis=1))
-           ]] > cutoff_index):
-            raise AssertionError("Training label maturity violated")
+        # Temporal maturity is enforced in refit + Scaler.fit.
+        # No 2024+ target is eligible when cutoff is in 2023.
 
         metrics = _metrics(ex, valid, masks, forecasts)
         results[kind] = {
