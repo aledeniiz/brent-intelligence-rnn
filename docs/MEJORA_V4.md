@@ -80,9 +80,9 @@ Genera, sin sobrescribir anteriores, una carpeta versionada bajo:
     reports/research_v4/full/TIMESTAMP_HASH/
 
 Contiene summary.json, REPORT.md, validation_metrics.csv, predictions.csv,
-learning_curves.html y fold_improvements.html. Los graficos no muestran
-datos inventados; las perdidas train incluyen penalizacion pero la
-validacion SmoothL1 no, por lo que hay que interpretar su escala con cuidado.
+learning_curves.html y fold_improvements.html. Los graficos no muestran datos inventados; tanto train como validacion
+muestran SmoothL1. El objetivo total de train (con penalizacion) se
+conserva por separado en summary.json.
 
 ## Criterios para evaluar resultados
 

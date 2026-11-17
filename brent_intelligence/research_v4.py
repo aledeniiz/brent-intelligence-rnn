@@ -167,18 +167,19 @@ def _loader(x: np.ndarray, y: np.ndarray, cfg: V4Config, seed: int):
 
 def _epoch_train(model, optimizer, loader, cfg):
     model.train()
-    total, seen = 0., 0
+    objective_total, data_total, seen = 0., 0., 0
     for x, y in loader:
         optimizer.zero_grad(set_to_none=True)
         predicted = model(x)
-        loss = nn.functional.smooth_l1_loss(predicted, y)
-        loss = loss + cfg.prediction_penalty * predicted.square().mean()
-        loss.backward()
+        data_loss = nn.functional.smooth_l1_loss(predicted, y)
+        objective = data_loss + cfg.prediction_penalty * predicted.square().mean()
+        objective.backward()
         nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
-        total += float(loss.item()) * len(x)
+        data_total += float(data_loss.item()) * len(x)
+        objective_total += float(objective.item()) * len(x)
         seen += len(x)
-    return total / max(seen, 1)
+    return data_total / max(seen, 1), objective_total / max(seen, 1)
 
 
 @torch.no_grad()
@@ -224,7 +225,7 @@ def train_inner(ex, inner_train, inner_val, cutoff, cfg, seed):
     wait = 0
     history = []
     for epoch in range(1, cfg.max_epochs + 1):
-        train_loss = _epoch_train(model, optimizer, loader, cfg)
+        train_loss, train_objective = _epoch_train(model, optimizer, loader, cfg)
         val_pred_scaled = _infer(model, xv)
         val_loss = float(nn.functional.smooth_l1_loss(
             torch.from_numpy(val_pred_scaled), torch.from_numpy(yv)
@@ -236,7 +237,8 @@ def train_inner(ex, inner_train, inner_val, cutoff, cfg, seed):
         if not np.isfinite(criterion):
             raise ValueError("Unstable inner validation")
         history.append({"epoch": epoch,
-                        "train_loss_with_penalty": train_loss,
+                        "train_loss": train_loss,
+                        "train_loss_with_penalty": train_objective,
                         "val_smooth_l1": val_loss,
                         "mean_rmse_relative": criterion,
                         "rmse_relative_by_horizon": ratios.tolist()})
@@ -403,9 +405,9 @@ def render_plots(folds, aggregate, out_dir: Path):
         for seed in fold["seeds"]:
             epochs = [h["epoch"] for h in seed["history"]]
             loss.add_trace(go.Scatter(
-                x=epochs, y=[h["train_loss_with_penalty"] for h in seed["history"]],
+                x=epochs, y=[h["train_loss"] for h in seed["history"]],
                 mode="lines+markers", showlegend=(i == 1),
-                name="Train (incluye regularizacion)", legendgroup="train"
+                name="Train (SmoothL1)", legendgroup="train"
             ), row=i, col=1)
             loss.add_trace(go.Scatter(
                 x=epochs, y=[h["val_smooth_l1"] for h in seed["history"]],
@@ -413,7 +415,7 @@ def render_plots(folds, aggregate, out_dir: Path):
                 name="Validacion (SmoothL1)", legendgroup="val"
             ), row=i, col=1)
     loss.update_layout(height=max(450, 230 * len(folds)),
-                       title="Curvas por fold; train incluye penalizacion, val no")
+                       title="Curvas por fold: SmoothL1 train/validation; la penalizacion extra se guarda en JSON")
     loss.write_html(str(out_dir / "learning_curves.html"), include_plotlyjs=True)
     chart = go.Figure()
     for h in HORIZONS:
@@ -473,7 +475,7 @@ def run_experiment(*, data_path: Path = DATA_PATH,
             "Historical 2024-2026 test of v1 has already been seen and is never used here.",
             "Predictive gains are not guaranteed; possible dependence across overlapping targets.",
             "The production model and prospective forecasts are unchanged.",
-            "Train curve includes penalty, validation curve does not: do not compare absolute magnitudes directly.",
+            "Train and validation plots use SmoothL1; optimization also includes a prediction penalty.",
             "Directional AUC on outer validation is descriptive, not a classifier probability or a selection criterion."
         ],
     }

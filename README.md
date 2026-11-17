@@ -148,3 +148,19 @@ Una vez revisados y publicados esos tres archivos, GitHub Actions puede
 actualizar el Brent entre semana y guardar public/latest_forecast.json sin
 reentrenar. El dashboard publico utiliza app_public.py, separado de app.py
 local. Revisa docs/ACTUALIZACION_AUTOMATICA.md antes de publicar los pesos.
+
+## Investigacion V4: LSTM regularizada sin tocar produccion
+
+El laboratorio opcional `scripts/research_v4.py` prueba una red mas pequena
+(16 unidades), regularizacion AdamW/dropout, retornos residuales y contraccion
+por horizonte hacia el ingenuo si la validacion interna no respalda
+predicciones activas. Recorta datos hasta 2021 antes de crear etiquetas.
+No utiliza el test historico para ajustar parametros. Separa
+validacion interna y externa, y promedia dos semillas.
+
+    .\.venv\Scripts\python.exe -m scripts.research_v4 --dry-run
+    .\.venv\Scripts\python.exe -m scripts.research_v4 --quick
+    .\.venv\Scripts\python.exe -m scripts.research_v4
+
+Los resultados se guardan en reports/research_v4/ y NO afectan a la LSTM
+publicada, el workflow ni los pronosticos existentes. Ver docs/MEJORA_V4.md.
