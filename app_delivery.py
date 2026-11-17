@@ -198,12 +198,28 @@ if st.checkbox("Marcar picos, caídas y episodios internacionales",value=True):
     for name,start,end,description in EVENTS:
         if pd.Timestamp(end)<prices.index[0] or pd.Timestamp(start)>prices.index[-1]:
             continue
-        fig.add_vrect(x0=max(pd.Timestamp(start),prices.index[0]),
-                      x1=min(pd.Timestamp(end),prices.index[-1]),
+        lower=max(pd.Timestamp(start),prices.index[0])
+        upper=min(pd.Timestamp(end),prices.index[-1])
+        fig.add_vrect(x0=lower,x1=upper,
                       fillcolor="#D8A13E",opacity=.12,line_width=0,
                       annotation_text=name,
                       annotation_position="top left",
                       annotation_font_size=10)
+        observed_episode=prices.loc[lower:upper,"brent"].dropna()
+        if not observed_episode.empty:
+            for tag,idx,color,symbol in (
+                ("Máximo observado",observed_episode.idxmax(),"#E5A336","triangle-up"),
+                ("Mínimo observado",observed_episode.idxmin(),"#7DC9E1","triangle-down"),
+            ):
+                fig.add_trace(go.Scatter(
+                    x=[idx],y=[float(observed_episode.loc[idx])],
+                    mode="markers",name=tag,
+                    legendgroup=tag,showlegend=(name==EVENTS[0][0]),
+                    marker={"size":11,"color":color,"symbol":symbol},
+                    hovertemplate=(name+": "+tag+
+                                   "<extra></extra><br>Fecha: %{x|%Y-%m-%d}"
+                                   "<br>Brent: %{y:.2f} USD")
+                ))
     with st.expander("Relación histórica con los episodios"):
         for name,start,end,description in EVENTS:
             st.write(f"**{name} ({start[:4]}):** {description}.")
