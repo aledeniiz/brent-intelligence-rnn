@@ -252,3 +252,8 @@ reports/research_v4/
 # Full training candidates: do not commit weights, labels, reports or charts
 artifacts/delivery_candidates/
 reports/delivery_training/
+
+
+# V5 experiment outputs/candidate weights (never version private market rows)
+reports/horizon_v5/
+artifacts/horizon_candidates/

@@ -20,6 +20,8 @@ jobs:
       - name: CLI check
         run: |
           python -m scripts.train_models --help
+          python -m scripts.train_horizon_models --help
+          python -m scripts.predict_horizon_models --help
           python -m scripts.download_data --help
 
       - name: Real FRED end-to-end smoke (NOT benchmark evidence)
