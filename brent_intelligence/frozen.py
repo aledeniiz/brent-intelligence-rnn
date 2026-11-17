@@ -154,7 +154,7 @@ def validate_bundle(directory: Path = FROZEN_DIR) -> tuple[dict, Preprocessor]:
 
 def forecast_frozen(*, data: Path = DATA_PATH, bundle: Path = FROZEN_DIR,
                     output: Path = PUBLISHED_FORECAST, allow_stale: bool = False,
-                    min_feature_coverage: float = 0.50) -> dict:
+                    min_feature_coverage: float = 0.50, history_dir: Path | None = None) -> dict:
     """Forecast without fitting, training, optimizers or mutable model weights."""
     manifest, prep = validate_bundle(bundle)
     raw = load_prices(data)
@@ -197,6 +197,9 @@ def forecast_frozen(*, data: Path = DATA_PATH, bundle: Path = FROZEN_DIR,
         raise ValueError("Calibracion incompatible")
     older = read_json(output) if Path(output).is_file() else None
     if older:
+        if history_dir is not None:
+            from brent_intelligence.prospective import archive_forecast
+            archive_forecast(older, directory=history_dir, provenance="legacy_import")
         previous_date = pd.Timestamp(older["last_date"]).date()
         if latest_date < previous_date:
             raise ValueError("Fecha de datos mas antigua que el ultimo pronostico publicado")
@@ -228,5 +231,9 @@ def forecast_frozen(*, data: Path = DATA_PATH, bundle: Path = FROZEN_DIR,
                     for date, price in history.items()],
         "notes": manifest["caveats"],
     }
+    if history_dir is not None:
+        from brent_intelligence.prospective import archive_forecast
+        archive_forecast(result, directory=history_dir, bundle=bundle,
+                         provenance="historical_reconstruction" if allow_stale else "live_issue")
     save_json_atomic(output, result)
     return {"changed": True, "forecast": result}

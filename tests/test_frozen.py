@@ -85,6 +85,37 @@ def test_corrupted_weights_and_missing_features_block_refresh(tmp_path):
         forecast_frozen(data=file, bundle=frozen, output=tmp_path / "x.json")
 
 
+def test_journal_keeps_prior_forecasts_and_blocks_publish_on_archive_failure(tmp_path, monkeypatch):
+    data = tmp_path / "prices.csv"
+    example_data(data)
+    frozen = bundle(tmp_path)
+    out, history = tmp_path / "latest.json", tmp_path / "journal"
+    original_weights = file_hash(frozen / "production.pt")
+    forecast_frozen(data=data, bundle=frozen, output=out, history_dir=history)
+    first = next((history / "forecasts").glob("*/*.json"))
+    original_record = first.read_bytes()
+    assert not forecast_frozen(data=data, bundle=frozen, output=out, history_dir=history)["changed"]
+    frame = pd.read_csv(data)
+    frame.loc[len(frame)-1, "brent"] += 1.
+    frame.to_csv(data, index=False)
+    forecast_frozen(data=data, bundle=frozen, output=out, history_dir=history)
+    assert len(list((history / "forecasts").glob("*/*.json"))) == 2
+    assert first.read_bytes() == original_record
+    before = out.read_bytes()
+    import brent_intelligence.prospective as journal
+    original_archive = journal.archive_forecast
+    def fail_live(forecast, **kwargs):
+        if kwargs.get("provenance") == "live_issue":
+            raise OSError("archive unavailable")
+        return original_archive(forecast, **kwargs)
+    monkeypatch.setattr(journal, "archive_forecast", fail_live)
+    frame.loc[len(frame)-1, "brent"] += 1.
+    frame.to_csv(data, index=False)
+    with pytest.raises(OSError, match="archive unavailable"):
+        forecast_frozen(data=data, bundle=frozen, output=out, history_dir=history)
+    assert out.read_bytes() == before and file_hash(frozen / "production.pt") == original_weights
+
+
 def test_loss_curves_use_stored_histories():
     folds = [{"history": [
         {"epoch": 1, "train_loss": 0.4, "val_loss": 0.5},
@@ -93,6 +124,39 @@ def test_loss_curves_use_stored_histories():
     fig = build_loss_figure("lstm", folds)
     assert len(fig.data) == 10
     assert all(len(trace.x) == 2 for trace in fig.data)
+
+
+def test_update_cli_twice_keeps_legacy_and_only_one_new_observation(tmp_path, monkeypatch):
+    from scripts.update_frozen import main
+    data = tmp_path / "prices.csv"
+    example_data(data)
+    full = pd.read_csv(data)
+    full.iloc[:-1].to_csv(data, index=False)
+    frozen = bundle(tmp_path)
+    latest = tmp_path / "latest.json"
+    history = tmp_path / "journal"
+    evaluation = tmp_path / "evaluation.json"
+    forecast_frozen(data=data, bundle=frozen, output=latest)
+    legacy = read_json(latest)
+    weights = file_hash(frozen / "production.pt")
+    monkeypatch.setattr("sys.argv", ["update_frozen", "--data", str(data),
+                        "--bundle", str(frozen), "--output", str(latest),
+                        "--history", str(history), "--evaluation", str(evaluation)])
+    main()
+    main()
+    first = next((history / "forecasts").glob("*/*.json"))
+    original = first.read_bytes()
+    assert len(list((history / "forecasts").glob("*/*.json"))) == 1
+    assert read_json(first)["forecast"] == legacy
+    assert not read_json(first)["eligible_for_prospective_evaluation"]
+    full.to_csv(data, index=False)  # next observed quote, already available today
+    main()
+    before = {p: p.read_bytes() for p in (history / "forecasts").glob("*/*.json")}
+    main()
+    assert len(before) == 2
+    assert {p: p.read_bytes() for p in (history / "forecasts").glob("*/*.json")} == before
+    assert first.read_bytes() == original and file_hash(frozen / "production.pt") == weights
+    assert read_json(evaluation)["evaluated_points"] == 0
 
 
 def test_model_export_without_training_checks_data_fingerprint(tmp_path):
