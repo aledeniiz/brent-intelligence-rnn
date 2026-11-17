@@ -244,3 +244,6 @@ reports/**/*.pptx
 
 # Diagnosticos y resultados regenerables (no versionar)
 reports/diagnostics/
+
+# Investigacion V4 (solo resultados locales; no publicar pesos, CSV o curvas)
+reports/research_v4/
