@@ -1,271 +1,83 @@
-# Aviso importante para entrega acadÃ©mica v4
+# Brent Intelligence
 
-El caso exige que **el modelo evaluado y el modelo mostrado en la
-aplicaciÃ³n sean identificables y coherentes**. El dashboard anterior
-app.py y app_public.py usan la LSTM de un experimento previo.
-La RNN seleccionada en el entrenamiento completo v4 tiene una app
-de demostraciÃ³n separada: **app_delivery.py**. Esta app carga los
-pesos locales de artifacts/delivery_candidates/RUN y presenta las
-mÃ©tricas 2024+ como evaluaciÃ³n de modelos anteriores al reajuste,
-NO como test del modelo final.
+**Predicción del precio del petróleo Brent mediante redes neuronales recurrentes — Caso de uso III, Aprendizaje Automático (UAX).**
 
-Con los pesos y resultados v4 existentes en el ordenador:
+[**Abrir aplicación web**](https://aledeniiz.github.io/brent-intelligence-rnn/) · [**Ver código del modelo**](brent_intelligence/) · [**Metodología**](docs/METODOLOGIA.md) · [**Evaluación y límites**](docs/UAX_AUTOMATIC_WEB.md)
 
-    .\.venv\Scripts\python.exe -m streamlit run app_delivery.py
+> **Importante:** la web pública ejecuta una **LSTM real en ONNX Runtime Web**, pero arranca con **datos sintéticos CC0** para demostrar la tecnología sin redistribuir cotizaciones de terceros. Sus resultados en ese modo **no son predicciones del mercado actual**. Las métricas académicas de abajo proceden de una evaluación histórica con datos reales y no de la demostración sintética.
 
-TambiÃ©n se puede abrir start_delivery_app.cmd. La app permite escoger
-5/63/252 sesiones, comparar RNN/LSTM/GRU, ver los episodios de
-2008/2014â€“16/2020/2022/2026 y aÃ±adir filas nuevas al CSV **sin
-reentrenar**. Los intervalos del 80% son solo bandas descriptivas
-basadas en errores histÃ³ricos de otro ajuste; su cobertura futura
-NO estÃ¡ validada.
+## ¿Qué hemos construido?
 
-La presentaciÃ³n de cinco diapositivas que utiliza la misma ejecuciÃ³n
-v4 se genera con:
+Un sistema de análisis de series temporales del petróleo Brent que compara **RNN, LSTM y GRU** frente a una referencia sencilla (predicción *naive*: mantener el último precio). Combina investigación reproducible con una aplicación interactiva accesible desde el navegador.
 
-    .\.venv\Scripts\python.exe -m scripts.build_delivery_presentation --summary reports/delivery_training/RUN/summary.json
+- **Horizontes:** 5, 63 y 252 sesiones.
+- **Entradas:** ventana de 60 sesiones y 16 variables financieras y energéticas.
+- **Modelo de la web:** LSTM histórica, **6.499 parámetros**, exportada a ONNX sin reentrenar ni cambiar sus pesos.
+- **Visualización:** tres horizontes, variaciones estimadas, bandas empíricas de incertidumbre del 80 % nominal, gráficos y selector de fecha aproximada.
+- **Validación:** comparación homogénea entre arquitecturas, cinco folds temporales (*walk-forward*), calibración diferenciada y evaluación retrospectiva posterior.
+- **Entrega técnica:** GitHub Pages, ONNX Runtime Web, documentación y tests automatizados.
 
-La cesta OPEP estÃ¡ soportada opcionalmente, pero NO consta entre
-las variables efectivamente utilizadas en la ejecuciÃ³n reciente.
-Los tiempos por arquitectura v4 no quedaron registrados; no inventarlos.
-Ver docs/AUDITORIA_ENUNCIADO.md para los puntos pendientes.
+## Resultados académicos: LSTM frente a naive
+
+El protocolo de la LSTM publicada en ONNX utiliza entrenamiento histórico hasta **2021**, calibración en **2022–2023** y una evaluación retrospectiva de orígenes desde **2024**, con **474 ejemplos por horizonte**. Un RMSE más bajo es mejor.
+
+| Horizonte | RMSE LSTM | RMSE naive | Reducción relativa de RMSE |
+|:--|--:|--:|--:|
+| 5 sesiones | 3,263 | 3,207 | **−1,73 %** |
+| 63 sesiones | 8,498 | 6,609 | **−28,58 %** |
+| 252 sesiones | 20,049 | 25,863 | **+22,48 %** |
+
+**Interpretación:** la LSTM mejora al naive en el horizonte anual, pero **no** en los horizontes de 5 y 63 sesiones. No se reivindica significación estadística, cobertura futura garantizada ni rentabilidad. La evaluación de 2024 en adelante ha sido examinada durante el desarrollo y **no debe describirse como test virgen**. Las observaciones de horizontes largos se solapan temporalmente.
+
+Estos valores pertenecen al **checkpoint histórico de la web**, no a la LSTM reajustada con datos de producción ni a los experimentos de investigación V4/V5. Fuente técnica auditable: [manifiesto ONNX con parámetros, escalador, métricas, calibración y hashes](web/pages/assets/model/manifest.json).
+
+## Probar la aplicación en 30 segundos
+
+1. Abre **[Brent Intelligence](https://aledeniiz.github.io/brent-intelligence-rnn/)**; no requiere instalación ni cargar archivos.
+2. Comprueba el aviso **«escenario sintético / demostración»**. La red ONNX sí ejecuta inferencia real; **las entradas no son cotizaciones reales**.
+3. Explora los horizontes 5, 63 y 252, los gráficos y el selector de fecha. El selector aproxima el horizonte disponible más cercano: **no predice exactamente cualquier fecha arbitraria**.
+
+La aplicación puede admitir entradas preparadas y autorizadas, procesadas localmente en el navegador. La **ingesta pública automática de datos financieros reales no está habilitada** porque todavía no se han acreditado todos los derechos de redistribución. El workflow de comprobación periódica valida el escenario sintético, **no descarga precios de mercado**.
+
+## Organización del repositorio
+
+| Ruta | Contenido |
+|:--|:--|
+| [`web/pages/`](web/pages/) | Aplicación pública, inferencia ONNX, interfaz y escenario sintético |
+| [`brent_intelligence/`](brent_intelligence/) | Preparación temporal, modelos RNN/LSTM/GRU y evaluación |
+| [`scripts/`](scripts/) | Descarga, entrenamiento, predicción, diagnóstico y exportación |
+| [`tests/`](tests/) | Tests de modelos, protocolos temporales y paquete ONNX |
+| [`docs/`](docs/) | Metodología, arquitectura, evolución de experimentos y limitaciones |
+| [`.github/workflows/`](.github/workflows/) | Tests, publicación del frontend y verificación de la demo |
+
+## Reproducir las verificaciones
+
+Con Python 3.12, desde la raíz del repositorio:
+
+```bash
+python -m pip install -e ".[test]"
+python -m pytest -q
+```
+
+Para servir localmente el mismo frontend estático:
+
+```bash
+python -m http.server 8770 --directory web/pages
+```
+
+Abre `http://localhost:8770`. Los tests de paridad con PyTorch que requieren los checkpoints históricos originales pueden quedar omitidos si dichos archivos privados no están presentes; el ONNX y su manifiesto público sí se distribuyen.
+
+El entrenamiento sobre datos reales y algunos diagnósticos requieren datasets y artefactos locales no redistribuidos. No se debe interpretar la clonación del repositorio como una reproducción automática de todo el experimento histórico sin esas fuentes.
+
+## Documentación y trazabilidad
+
+- [Metodología científica](docs/METODOLOGIA.md) · [Protocolo de entrenamiento y evaluación](docs/ENTRENAMIENTO_ENTREGA.md)
+- [Implementación de la demo automática y auditoría de fuentes](docs/UAX_AUTOMATIC_WEB.md)
+- [Exportación ONNX y requisitos de publicación](docs/ONNX_RELEASE.md) · [Licencias del paquete](web/pages/LICENSES_AND_MODEL.md)
+- [Asignación original del caso](https://github.com/UAX-VCMT-26-27/aa-case-02-oil-price-prediction)
+
+**Limitaciones:** los datos exógenos no están plenamente certificados *point-in-time*; los intervalos de cobertura nominal del 80 % se calibraron históricamente y no garantizan cobertura futura; el estudio no constituye una estrategia de trading validada. El escenario sintético solo demuestra funcionamiento de software.
 
 ---
 
-# Brent Intelligence â€” Prediccion de Brent con RNN, LSTM y GRU
-
-Caso 2 de Aprendizaje Automatico (UAX). Aplicacion de pronostico del Brent spot
-con comparacion de redes recurrentes, baseline ingenuo e incertidumbre empirica.
-Material docente: https://github.com/UAX-VCMT-26-27/aa-case-02-oil-price-prediction
-
-ESTADO: codigo integrado y verificado con tests sinteticos; la descarga y el
-entrenamiento con Brent real deben ejecutarse antes de la entrega. No se
-presentan metricas de datasets sinteticos como evidencia del mercado.
-
-## Windows 11: ejecucion completa
-
-Instala Python 3.12 (con lanzador py.exe) y Git, descarga este repositorio
-y haz doble clic sobre run_windows.cmd. Este lanzador crea .venv, instala
-dependencias, ejecuta pruebas, descarga y audita el Brent, entrena RNN/LSTM/GRU,
-genera pronosticos y abre Streamlit. Para volver a abrir el panel sin entrenar
-usa start_app.cmd.
-
-Tambien se puede ejecutar manualmente desde PowerShell, en el directorio
-del proyecto:
-
-    py -3.12 -m venv .venv
-    .\.venv\Scripts\python.exe -m pip install -e ".[test]"
-    .\.venv\Scripts\python.exe -m pytest -q
-    .\.venv\Scripts\python.exe -m scripts.check_environment
-    .\.venv\Scripts\python.exe -m scripts.download_data
-    .\.venv\Scripts\python.exe -m scripts.audit_data
-    .\.venv\Scripts\python.exe -m scripts.train_models --dry-run
-    .\.venv\Scripts\python.exe -m scripts.train_models
-    .\.venv\Scripts\python.exe -m scripts.predict
-    .\.venv\Scripts\python.exe -m streamlit run app.py
-
-Para una prueba rapida aislada:
-
-    .\.venv\Scripts\python.exe -m scripts.train_models --smoke --epochs 2 --hidden-size 8
-
-El modo smoke NO publica el modelo activo. La opcion --device cuda solo es
-adecuada cuando PyTorch confirma GPU NVIDIA disponible.
-
-## Estructura
-
-- brent_intelligence/config.py: configuracion inicial y tres horizontes.
-- brent_intelligence/features.py: transformaciones de variables sin mirar al futuro.
-- brent_intelligence/temporal.py: ventanas y folds de validacion temporal.
-- brent_intelligence/modeling.py: RNN, LSTM y GRU multihorizonte.
-- brent_intelligence/evaluation.py: RMSE, MAE, MSE y naive.
-- brent_intelligence/experiment.py: entrenamiento, seleccion, calibracion,
-  evaluacion con test reservado, artefactos y modelo de produccion separado.
-- scripts/download_data.py: FRED/EIA, Yahoo opcional, CSV OPEP opcional.
-- scripts/audit_data.py: auditoria de cobertura e integridad.
-- scripts/train_models.py: CLI de investigacion completa.
-- scripts/predict.py: inferencia desde un modelo ya versionado.
-- scripts/check_environment.py: comprobaciones del sistema.
-- app.py: dashboard empresarial Streamlit.
-- docs: metodologia, ejecucion y guion comercial.
-
-Los archivos descargados se guardan en data/, los pesos y transformadores
-en artifacts/runs/ y las auditorias en reports/. NO se suben a GitHub.
-Las tablas verificables se exportan automaticamente a reports/comparison_table.csv y
-reports/presentation_facts.md; si se ejecuta manualmente, usa:
-
-    .\.venv\Scripts\python.exe -m scripts.export_results
-
-La ultima ejecucion completa queda identificada por artifacts/active.json
-y conserva el hash SHA256 del CSV, configuracion, metricas y pesos.
-
-## Protocolo matematico
-
-Objetivo: Brent spot (USD/barril), desde 2000. Entradas: ventana de 60
-sesiones observadas. Salidas: 5, 63 y 252 sesiones; retornos logaritmicos
-futuros convertidos despues a precios positivos. Tres redes, mismo
-presupuesto y mismas particiones; predictor ingenuo = ultimo Brent.
-
-Cinco folds walk-forward entre 2011 y 2021. En cada corte solo se entrenan
-ejemplos cuyas TRES etiquetas ya hayan madurado. El escalador de las
-caracteristicas se ajusta al pasado del fold. Entrenamiento final evaluado
-con etiquetas hasta 2021; calibracion posterior 2022-2023; test reservado
-para anclajes desde 2024 con etiquetas ya observadas.
-
-La arquitectura se escoge usando la media del cociente RMSE/RMSE ingenuo
-en los folds y horizontes, antes del test. Las bandas del 80% nominal se
-calibran en errores logaritmicos y se mide su cobertura en test.
-
-Despues se entrena un MODELO DE PRODUCCION distinto con las etiquetas que
-ya hayan madurado hasta la ultima descarga. Las metricas del test describen
-los modelos historicos, no constituyen una evaluacion independiente del
-modelo actualizado de produccion.
-
-## Datos complementarios y fuentes
-
-FRED/EIA proporciona Brent y WTI, gas, FX, BCE y VIX. Yahoo agrega
-futuros, cobre, oro e indice dolar cuando el proveedor responde. El
-script del profesor no descarga la cesta OPEP; para aÃ±adir un CSV diario
-verificado de dos columnas Date,orb, ejecutar:
-
-    python -m scripts.download_data --orb-csv ruta/a/orb.csv
-
-Puedes omitir Yahoo con --fred-only. El Brent no se rellena con ffill,
-y los valores negativos historicos de WTI no se eliminan arbitrariamente.
-
-## Limitaciones y entrega
-
-Las variables externas pueden haberse publicado despues del precio spot
-o revisado historicamente. Desfasarlas una sesion no garantiza un conjunto
-point-in-time. Las bandas y los errores fuera de muestra no garantizan
-ganancias, ni anticipan shocks geopoliticos, ni constituyen backtest de
-trading. Un modelo puede perder frente al baseline y debe comunicarse.
-
-El profesor pide el CODIGO EN GITHUB y una presentacion de MAXIMO CINCO
-diapositivas (sin contar portada). No inventar valores de precision o
-cobertura. Consulta docs/METODOLOGIA.md, docs/ENTREGA.md y
-docs/PRESENTACION.md. No compartir ni subir PAT, secretos o credenciales.
-
-
-## Presentacion automatica (5 diapositivas)
-
-El lanzador de Windows genera automaticamente una presentacion PowerPoint
-comercial de exactamente cinco diapositivas usando los resultados reales del
-test y las predicciones actuales. Se guarda en:
-
-    reports/Brent_Intelligence_5_slides.pptx
-
-Si solo quieres regenerarla:
-
-    .\.venv\Scripts\python.exe -m scripts.build_presentation
-
-Revisa los textos y resultados antes de entregar; la presentacion refleja
-los errores reales, incluso cuando la red no mejora al predictor ingenuo.
-
-
-## Diagnosticos y actualizacion automatica (modelo congelado)
-
-Sin volver a entrenar, puedes recuperar graficos reales de entrenamiento y test:
-
-    .\.venv\Scripts\python.exe -m scripts.plot_diagnostics
-
-Genera HTML de loss train/validation (RNN, LSTM y GRU en cinco folds),
-graficos de precio real frente a predicho y residuos, y predicciones_test.csv.
-El CSV de datos tiene que ser IDENTICO al usado al entrenar (SHA256).
-
-Para habilitar la actualizacion automatica SIN depender del portatil,
-prepara una instantanea del modelo de produccion:
-
-    .\.venv\Scripts\python.exe -m scripts.export_frozen
-
-Crea deployment/frozen/{production.pt,preprocessing.json,manifest.json}.
-Una vez revisados y publicados esos tres archivos, GitHub Actions puede
-actualizar el Brent entre semana y guardar public/latest_forecast.json sin
-reentrenar. El dashboard publico utiliza app_public.py, separado de app.py
-local. Revisa docs/ACTUALIZACION_AUTOMATICA.md antes de publicar los pesos.
-
-## Investigacion V4: LSTM regularizada sin tocar produccion
-
-El laboratorio opcional `scripts/research_v4.py` prueba una red mas pequena
-(16 unidades), regularizacion AdamW/dropout, retornos residuales y contraccion
-por horizonte hacia el ingenuo si la validacion interna no respalda
-predicciones activas. Recorta datos hasta 2021 antes de crear etiquetas.
-No utiliza el test historico para ajustar parametros. Separa
-validacion interna y externa, y promedia dos semillas.
-
-    .\.venv\Scripts\python.exe -m scripts.research_v4 --dry-run
-    .\.venv\Scripts\python.exe -m scripts.research_v4 --quick
-    .\.venv\Scripts\python.exe -m scripts.research_v4
-
-Los resultados se guardan en reports/research_v4/ y NO afectan a la LSTM
-publicada, el workflow ni los pronosticos existentes. Ver docs/MEJORA_V4.md.
-
-
-## Entrenamiento definitivo de entrega (modelo completo hasta la ultima fecha)
-
-El comando preferido para el caso completo ahora es:
-
-    .\.venv\Scripts\python.exe -m scripts.download_data
-    .\.venv\Scripts\python.exe -m scripts.train_delivery --dry-run
-    .\.venv\Scripts\python.exe -m scripts.train_delivery
-
-Entrena y guarda **RNN, LSTM y GRU con el dataset completo**, usando por
-cada horizonte solo etiquetas maduras (5 y 63 sesiones aprovechan datos
-recientes que antes se descartaban por no existir todavia las de 252).
-Usa ventana de 60, exogenas disponibles, dropout, AdamW, modelo residual y
-validacion temporal anidada. Selecciona arquitectura con folds anteriores
-a 2024; genera tambien comparacion historica 2024+ que NO es test virgen.
-Los tres candidatos finales se entrenan hasta la ultima cotizacion
-disponible y quedan guardados de forma aislada, sin cambiar dashboard ni
-modelo congelado. Instrucciones y limitaciones en docs/ENTRENAMIENTO_ENTREGA.md.
-
-
-## EvaluaciÃ³n estadÃ­stica y validaciÃ³n indicada por el profesor
-
-El comando preferente de entrega es:
-
-    python -m scripts.train_delivery
-
-La evaluaciÃ³n del **modelo entrenado sÃ³lo hasta 29/12/2023** se mide
-sobre precios posteriores (orÃ­genes desde 2024, objetivos madurados),
-para los 3 horizontes y 3 redes, usando **RÂ², MAE, MSE, RMSE** e
-ingenÃºo. Genera
-reports/delivery_training/RUN/{holdout_metrics.csv,
-holdout_predictions.csv,real_vs_predicted.html,
-real_vs_predicted_scatter.html,learning_curves.html}.
-El aÃ±o 2024+ no es test virgen tras exploraciones previas.
-
-**Dos operaciones independientes:** scripts.download_data incorpora
-nuevos valores (FRED/EIA); scripts.predict_delivery carga los pesos
-ya entrenados y hace solamente inferencia, sin fit ni optimizer.
-Existe tambien la renovaciÃ³n diaria con GitHub Actions y los pesos
-congelados de producciÃ³n. No es necesario reentrenar por cada valor.
-Ver docs/ENTRENAMIENTO_ENTREGA.md.
-
-
-## V5: modelos independientes por horizonte (investigacion de mejora)
-
-Tras la evaluacion de entrega, se dispone de un nuevo **experimento completo**
-que NO sustituye automaticamente al predictor publicado. Cada horizonte
-(5, 63 y 252 sesiones) entrena su **propia** RNN/LSTM/GRU y aprovecha todas
-las etiquetas maduradas de su objetivo; el sistema elige la arquitectura
-por horizonte segun validacion cronologica anterior a 2024.
-
-    .\.venv\Scripts\python.exe -m scripts.train_horizon_models --dry-run
-    .\.venv\Scripts\python.exe -m scripts.train_horizon_models
-
-El CSV debe estar actualizado (si no, ejecutar scripts.download_data).
-Los resultados se guardan bajo reports/horizon_v5/RUN/ y los pesos candidatos
-en artifacts/horizon_candidates/RUN/. Se guardan curvas, metricas, folds,
-predicciones individuales y tambien el rendimiento de los pronosticos SIN
-contraccion: si el mecanismo escoge alpha=0, equivale al ingenuo.
-
-Se pueden reproducir los pronosticos, sin entrenar ni cambiar pesos:
-
-    .\.venv\Scripts\python.exe -m scripts.predict_horizon_models --summary reports/horizon_v5/RUN/summary.json
-
-No usar los errores de 2024+ para seguir modificando o seleccionando modelos:
-ese periodo ya se examino anteriormente. Ver docs/HORIZONTES_V5.md.
-
-## Frontend ONNX preparado
-
-`web/pages/` ejecuta laLSTMhistórica calibrada6499 enelnavegador. No publica cotizaciones ni tensores financieros por defecto: cargar JSONprivadoautorizadopara inferenciareal. Modelo/escala/calibración identificados, sin fallbacksilenciosoauna demo. Instalación,licencias,guardiasdepublicación ypasos: [docs/ONNX_RELEASE.md](docs/ONNX_RELEASE.md). El nuevo flujo es independiente del antiguo Streamlit/refit2026. Publicación pendiente de aprobación final; no asumir enlace público operativo.
+*Proyecto académico UAX. Las implementaciones exploratorias antiguas (Streamlit, V4/V5 y producción congelada) se conservan en el repositorio como material de investigación, pero no deben confundirse con la LSTM histórica publicada en la web.*
