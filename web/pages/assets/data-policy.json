@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "complete_live_inputs_approved": false,
+  "live_input_url": null,
+  "blocked_features": [
+    "vix_log_level",
+    "cobre_log_change_5",
+    "oro_log_change_5",
+    "indice_dolar_log_change_5"
+  ],
+  "synthetic_sha256": "23f9d158d1d3290e5af0ead2991e6ededf748bdb3c3f79f923d1a1397879637a",
+  "synthetic_url": "synthetic/scenario.json",
+  "license": "CC0-1.0",
+  "reason": "No están acreditados todos los derechos de redistribución. No se consultan fuentes incompletas ni se mezclan con el escenario sintético."
+}

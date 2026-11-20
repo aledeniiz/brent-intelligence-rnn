@@ -1,0 +1,19 @@
+name: Verify licensed UAX automatic demonstration
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 20 * * 1-5'
+permissions:
+  contents: read
+jobs:
+  verify-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e . pytest
+      - name: Verify own CC0 fixture and frozen feature pipeline; no financial downloads
+        run: test -s web/pages/assets/synthetic/LICENSE.txt
+      - run: python -m pytest tests/test_uax_automatic.py::test_synthetic_is_reproducible_and_not_financial tests/test_onnx_public_bundle.py -q

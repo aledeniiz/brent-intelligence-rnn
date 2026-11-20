@@ -5,7 +5,9 @@ def test_public_bundle_has_no_financial_inputs():
  p=ROOT/'web/pages'
  assert not (p/'assets/data').exists()
  assert not (p/'assets/demo-state.json').exists()
- assert (p/'assets/private-input.js').exists()
+ assert not (p/'assets/private-input.js').exists()
+ assert 'type="file"' not in (p/'index.html').read_text(encoding='utf-8')
+ assert (p/'assets/synthetic/scenario.json').exists()
  assert (p/'assets/ort/LICENSE').exists()
  assert (p/'assets/ort/ThirdPartyNotices.txt').exists()
  m=json.loads((p/'assets/model/manifest.json').read_text(encoding='utf-8'))
