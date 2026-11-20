@@ -1,0 +1,30 @@
+name: Deploy public ONNX frontend only
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: public-onnx-frontend
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject financial data in initial public package
+        run: |
+          test ! -e web/pages/assets/data
+          test ! -e web/pages/assets/demo-state.json
+          test -s web/pages/assets/ort/LICENSE
+          test -s web/pages/assets/ort/ThirdPartyNotices.txt
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/pages
+      - uses: actions/deploy-pages@v4
+        id: deployment

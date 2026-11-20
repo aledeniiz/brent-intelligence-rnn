@@ -1,38 +1,38 @@
-# Aviso importante para entrega académica v4
+# Aviso importante para entrega acadÃ©mica v4
 
 El caso exige que **el modelo evaluado y el modelo mostrado en la
-aplicación sean identificables y coherentes**. El dashboard anterior
+aplicaciÃ³n sean identificables y coherentes**. El dashboard anterior
 app.py y app_public.py usan la LSTM de un experimento previo.
 La RNN seleccionada en el entrenamiento completo v4 tiene una app
-de demostración separada: **app_delivery.py**. Esta app carga los
+de demostraciÃ³n separada: **app_delivery.py**. Esta app carga los
 pesos locales de artifacts/delivery_candidates/RUN y presenta las
-métricas 2024+ como evaluación de modelos anteriores al reajuste,
+mÃ©tricas 2024+ como evaluaciÃ³n de modelos anteriores al reajuste,
 NO como test del modelo final.
 
 Con los pesos y resultados v4 existentes en el ordenador:
 
     .\.venv\Scripts\python.exe -m streamlit run app_delivery.py
 
-También se puede abrir start_delivery_app.cmd. La app permite escoger
+TambiÃ©n se puede abrir start_delivery_app.cmd. La app permite escoger
 5/63/252 sesiones, comparar RNN/LSTM/GRU, ver los episodios de
-2008/2014–16/2020/2022/2026 y añadir filas nuevas al CSV **sin
+2008/2014â€“16/2020/2022/2026 y aÃ±adir filas nuevas al CSV **sin
 reentrenar**. Los intervalos del 80% son solo bandas descriptivas
-basadas en errores históricos de otro ajuste; su cobertura futura
-NO está validada.
+basadas en errores histÃ³ricos de otro ajuste; su cobertura futura
+NO estÃ¡ validada.
 
-La presentación de cinco diapositivas que utiliza la misma ejecución
+La presentaciÃ³n de cinco diapositivas que utiliza la misma ejecuciÃ³n
 v4 se genera con:
 
     .\.venv\Scripts\python.exe -m scripts.build_delivery_presentation --summary reports/delivery_training/RUN/summary.json
 
-La cesta OPEP está soportada opcionalmente, pero NO consta entre
-las variables efectivamente utilizadas en la ejecución reciente.
+La cesta OPEP estÃ¡ soportada opcionalmente, pero NO consta entre
+las variables efectivamente utilizadas en la ejecuciÃ³n reciente.
 Los tiempos por arquitectura v4 no quedaron registrados; no inventarlos.
 Ver docs/AUDITORIA_ENUNCIADO.md para los puntos pendientes.
 
 ---
 
-# Brent Intelligence — Prediccion de Brent con RNN, LSTM y GRU
+# Brent Intelligence â€” Prediccion de Brent con RNN, LSTM y GRU
 
 Caso 2 de Aprendizaje Automatico (UAX). Aplicacion de pronostico del Brent spot
 con comparacion de redes recurrentes, baseline ingenuo e incertidumbre empirica.
@@ -124,7 +124,7 @@ modelo actualizado de produccion.
 
 FRED/EIA proporciona Brent y WTI, gas, FX, BCE y VIX. Yahoo agrega
 futuros, cobre, oro e indice dolar cuando el proveedor responde. El
-script del profesor no descarga la cesta OPEP; para añadir un CSV diario
+script del profesor no descarga la cesta OPEP; para aÃ±adir un CSV diario
 verificado de dos columnas Date,orb, ejecutar:
 
     python -m scripts.download_data --orb-csv ruta/a/orb.csv
@@ -219,26 +219,26 @@ disponible y quedan guardados de forma aislada, sin cambiar dashboard ni
 modelo congelado. Instrucciones y limitaciones en docs/ENTRENAMIENTO_ENTREGA.md.
 
 
-## Evaluación estadística y validación indicada por el profesor
+## EvaluaciÃ³n estadÃ­stica y validaciÃ³n indicada por el profesor
 
 El comando preferente de entrega es:
 
     python -m scripts.train_delivery
 
-La evaluación del **modelo entrenado sólo hasta 29/12/2023** se mide
-sobre precios posteriores (orígenes desde 2024, objetivos madurados),
-para los 3 horizontes y 3 redes, usando **R², MAE, MSE, RMSE** e
-ingenúo. Genera
+La evaluaciÃ³n del **modelo entrenado sÃ³lo hasta 29/12/2023** se mide
+sobre precios posteriores (orÃ­genes desde 2024, objetivos madurados),
+para los 3 horizontes y 3 redes, usando **RÂ², MAE, MSE, RMSE** e
+ingenÃºo. Genera
 reports/delivery_training/RUN/{holdout_metrics.csv,
 holdout_predictions.csv,real_vs_predicted.html,
 real_vs_predicted_scatter.html,learning_curves.html}.
-El año 2024+ no es test virgen tras exploraciones previas.
+El aÃ±o 2024+ no es test virgen tras exploraciones previas.
 
 **Dos operaciones independientes:** scripts.download_data incorpora
 nuevos valores (FRED/EIA); scripts.predict_delivery carga los pesos
 ya entrenados y hace solamente inferencia, sin fit ni optimizer.
-Existe tambien la renovación diaria con GitHub Actions y los pesos
-congelados de producción. No es necesario reentrenar por cada valor.
+Existe tambien la renovaciÃ³n diaria con GitHub Actions y los pesos
+congelados de producciÃ³n. No es necesario reentrenar por cada valor.
 Ver docs/ENTRENAMIENTO_ENTREGA.md.
 
 
@@ -265,3 +265,7 @@ Se pueden reproducir los pronosticos, sin entrenar ni cambiar pesos:
 
 No usar los errores de 2024+ para seguir modificando o seleccionando modelos:
 ese periodo ya se examino anteriormente. Ver docs/HORIZONTES_V5.md.
+
+## Frontend ONNX preparado
+
+`web/pages/` ejecuta laLSTMhistórica calibrada6499 enelnavegador. No publica cotizaciones ni tensores financieros por defecto: cargar JSONprivadoautorizadopara inferenciareal. Modelo/escala/calibración identificados, sin fallbacksilenciosoauna demo. Instalación,licencias,guardiasdepublicación ypasos: [docs/ONNX_RELEASE.md](docs/ONNX_RELEASE.md). El nuevo flujo es independiente del antiguo Streamlit/refit2026. Publicación pendiente de aprobación final; no asumir enlace público operativo.
