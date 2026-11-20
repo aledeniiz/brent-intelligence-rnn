@@ -1,0 +1,193 @@
+{
+  "format_version": 1,
+  "model_id": "LSTM_evaluation_2021_cal2022_23",
+  "architecture": "lstm",
+  "parameters": 6499,
+  "window": 60,
+  "feature_names": [
+    "brent_log_level",
+    "brent_ret_1",
+    "brent_ret_5",
+    "brent_ret_21",
+    "brent_vol_21",
+    "brent_vs_ma_21",
+    "wti_spread_relative",
+    "wti_change_scaled",
+    "gas_natural_log_change_5",
+    "tipo_bce",
+    "usd_por_eur_log_change_5",
+    "cny_por_usd_log_change_5",
+    "vix_log_level",
+    "cobre_log_change_5",
+    "oro_log_change_5",
+    "indice_dolar_log_change_5"
+  ],
+  "weights_sha256": "55878cdd309ea074d5c07211f6a5dcdae0b8a034e71b4f562f64985bf3cbd125",
+  "onnx_sha256": "019ce49e3a9f4d37e5ddedc4b8192e42f1ddadd70bccb454406dd3ecb6876b76",
+  "scaler_sha256": "ae1e1171417e6f2f5e37e38c1a31d95ba57ce1ceb7509999a2dbc0441138931d",
+  "scaler": {
+    "columns": [
+      "brent_log_level",
+      "brent_ret_1",
+      "brent_ret_5",
+      "brent_ret_21",
+      "brent_vol_21",
+      "brent_vs_ma_21",
+      "wti_spread_relative",
+      "wti_change_scaled",
+      "gas_natural_log_change_5",
+      "tipo_bce",
+      "usd_por_eur_log_change_5",
+      "cny_por_usd_log_change_5",
+      "vix_log_level",
+      "cobre_log_change_5",
+      "oro_log_change_5",
+      "indice_dolar_log_change_5"
+    ],
+    "medians": [
+      4.131720623115926,
+      0.0006299212806721854,
+      0.00446722592856208,
+      0.016937861804170673,
+      0.01968355519912761,
+      0.008316835867381078,
+      -0.023421286688407924,
+      0.004077074865679286,
+      0.0,
+      0.25,
+      0.000370610567103663,
+      -1.2082110020239512e-05,
+      2.9210087273580543,
+      0.0017024168611587953,
+      0.002971105216460934,
+      0.0
+    ],
+    "x_mean": [
+      4.073173350143745,
+      0.00022197405361577523,
+      0.0011322250449479028,
+      0.004288981499796634,
+      0.022284543201215114,
+      0.0020160913197467562,
+      -0.026230082431032666,
+      0.0026101783729171424,
+      0.0004121655207021837,
+      0.734975369458128,
+      8.993889411167263e-05,
+      -0.0002484241415040329,
+      2.9657763658734035,
+      0.001553615339612052,
+      0.001863100636797787,
+      -4.473006456962513e-05
+    ],
+    "x_std": [
+      0.4813287613315981,
+      0.027417919449306084,
+      0.060262640652054125,
+      0.12954728461741363,
+      0.01588150385055192,
+      0.07101258241422344,
+      0.10720181014625035,
+      0.1034609532516556,
+      0.109684694026516,
+      1.2755756820852202,
+      0.013627195764732099,
+      0.003499007512546856,
+      0.3532500271534077,
+      0.03645964087264671,
+      0.02464288717548515,
+      0.011235414320506378
+    ],
+    "y_mean": [
+      0.0009166625292628203,
+      0.010089423263517732,
+      0.04674740359109723
+    ],
+    "y_std": [
+      0.06090252120694318,
+      0.23233599476575992,
+      0.39240335155913253
+    ]
+  },
+  "calibration": {
+    "nominal": 0.8,
+    "log_error_quantiles": [
+      0.07565671561091164,
+      0.2470818365139773,
+      0.3773127929670665
+    ],
+    "test_coverage": {
+      "5": 0.9156118143459916,
+      "63": 0.9936708860759493,
+      "252": 0.9282700421940928
+    },
+    "n_calibration": 251,
+    "n_test": 474
+  },
+  "metrics": {
+    "5": {
+      "mae": 2.472085619985746,
+      "mse": 10.644298973183696,
+      "rmse": 3.262560186905936,
+      "naive_mae": 2.4438818565400844,
+      "naive_rmse": 3.207174578405627,
+      "relative_rmse": 1.0172692839589177,
+      "n": 474
+    },
+    "63": {
+      "mae": 7.140626048610859,
+      "mse": 72.22387184043754,
+      "rmse": 8.498462910458429,
+      "naive_mae": 5.364620253164556,
+      "naive_rmse": 6.609453704357282,
+      "relative_rmse": 1.2858041361052,
+      "n": 474
+    },
+    "252": {
+      "mae": 16.196906106442434,
+      "mse": 401.9818006315871,
+      "rmse": 20.049483799629034,
+      "naive_mae": 19.888417721518987,
+      "naive_rmse": 25.863411642982175,
+      "relative_rmse": 0.7752064606321687,
+      "n": 474
+    }
+  },
+  "model_info": {
+    "architecture": "lstm",
+    "parameters": 6499,
+    "window": 60,
+    "features": 16,
+    "feature_names": [
+      "brent_log_level",
+      "brent_ret_1",
+      "brent_ret_5",
+      "brent_ret_21",
+      "brent_vol_21",
+      "brent_vs_ma_21",
+      "wti_spread_relative",
+      "wti_change_scaled",
+      "gas_natural_log_change_5",
+      "tipo_bce",
+      "usd_por_eur_log_change_5",
+      "cny_por_usd_log_change_5",
+      "vix_log_level",
+      "cobre_log_change_5",
+      "oro_log_change_5",
+      "indice_dolar_log_change_5"
+    ],
+    "weights_sha256": "55878cdd309ea074d5c07211f6a5dcdae0b8a034e71b4f562f64985bf3cbd125",
+    "preprocessing_sha256": "ae1e1171417e6f2f5e37e38c1a31d95ba57ce1ceb7509999a2dbc0441138931d",
+    "protocol": "LSTM_evaluation_2021_cal2022_23",
+    "trained_until": "2021-12-31",
+    "last_training_origin": "2021-01-04",
+    "hidden_size": 32,
+    "layers": 1,
+    "training_epochs": 3,
+    "training_seconds": 9.757,
+    "academic_model": "RNN1083: no integrada porque su checkpoint final no dispone de calibración separada compatible",
+    "selection": "menor media fold/horizonte RMSE/ingenuo antes del test",
+    "validation_score": 1.042222464304799,
+    "checkpoint": "lstm_evaluation.pt / lstm.onnx (SHA 019ce49e3a9f)"
+  }
+}
